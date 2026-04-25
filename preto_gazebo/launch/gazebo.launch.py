@@ -22,12 +22,14 @@ def generate_launch_description():
     
     ros_gz_sim_pkg = get_package_share_directory('ros_gz_sim')
 
-    world_file = os.path.join(pkg_path, 'world', 'modern_world.sdf')
+    world_file = os.path.join(pkg_path, 'world', 'warehouse.sdf')
 
     urdf_file = os.path.join(pkg_description_path, 'urdf', 'preto_description.urdf')
 
+    controllers_config_file = os.path.join(pkg_path, 'config', 'controllers.yaml')
+
     with open(urdf_file, 'r') as file:
-        description = file.read()
+        description = file.read().replace('CONTROLLER_PARAMS_FILE', controllers_config_file)
     
     gazebo = IncludeLaunchDescription(
         PythonLaunchDescriptionSource(
@@ -82,10 +84,30 @@ def generate_launch_description():
         }]
     )
 
+    joint_state_broadcaster_spawner = Node(
+        package="controller_manager",
+        executable="spawner",
+        arguments=["joint_state_broadcaster"],
+    )
+
+    diff_drive_controller_spawner = Node(
+        package="controller_manager",
+        executable="spawner",
+        arguments=["diff_drive_controller"],
+    )
+
     return LaunchDescription([
         gazebo,
         robot_state_publisher,
         spawn_robot,
         bridge,
-        lidar_fusion
+        lidar_fusion,
+        TimerAction(
+            period=10.0,
+            actions=[joint_state_broadcaster_spawner]
+        ),
+        TimerAction(
+            period=10.0,
+            actions=[diff_drive_controller_spawner]
+        ),
     ])

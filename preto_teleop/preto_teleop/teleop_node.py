@@ -9,7 +9,7 @@ import tty
 # Instructions for the user
 msg = """
 ---------------------------
-Control Your Preto Robot!
+Preto Controls!
 ---------------------------
 Moving around:
         w

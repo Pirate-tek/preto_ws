@@ -24,7 +24,7 @@ setup(
     },
     entry_points={
         'console_scripts': [
-            'teleop_node = preto_teleop.teleop_node:main'
+            'teleop_node = preto_teleop.teleop_node:main',
         ],
     },
 )
